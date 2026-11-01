@@ -1,3 +1,4 @@
       - name: Extract mod ZIP
-        run: |
-          unzip -o voicehunter.zip -d mod
+        run: | 
+          unzip -o 
+voicehunter.zip -d mod
