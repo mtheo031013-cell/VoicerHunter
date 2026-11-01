@@ -13,8 +13,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Extract mod ZIP
-        run: |
-          unzip -o voicehunter.zip -d mod
+        run: unzip -o voicehunter.zip -d mod
 
       - uses: actions/setup-java@v4
         with:
@@ -23,9 +22,18 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      - name: Find project
+        run: |
+          PROJECT_DIR=$(dirname "$(find mod -name build.gradle -type f -print -quit)")
+          if [ ! -f "$PROJECT_DIR/gradlew" ]; then
+            echo "Não encontrei o gradlew na pasta do projeto."
+            exit 1
+          fi
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+
       - name: Build
         run: |
-          cd mod/voicehunter/voicehunter
+          cd "$PROJECT_DIR"
           chmod +x gradlew
           ./gradlew build --stacktrace
 
@@ -33,5 +41,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: voicehunter-jar
-          path: mod/voicehunter/voicehunter/build/libs/*.jar
-          
+          path: mod/**/build/libs/*.jar
+          if-no-files-found: error
